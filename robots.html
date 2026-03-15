@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="核心成果矩阵 - 元核智算工作室">
+  <title>核心成果矩阵 | Meta-Kernel Lab</title>
+  <link rel="stylesheet" href="css/global.css">
+  <style>
+    .nav-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: var(--z-index-nav);
+      background: rgba(255, 255, 255, 0.72);
+      backdrop-filter: saturate(180%) blur(20px);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    }
+
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1024px;
+      margin: 0 auto;
+      padding: 0 var(--spacing-lg);
+      height: 48px;
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+      font-weight: 600;
+      font-size: 1.125rem;
+      text-decoration: none;
+      color: var(--color-text);
+    }
+
+    .nav-logo svg {
+      width: 28px;
+      height: 28px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: var(--spacing-xl);
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--color-text);
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 400;
+      transition: color 0.3s var(--transition-smooth);
+      opacity: 0.8;
+    }
+
+    .nav-links a:hover {
+      opacity: 1;
+      color: var(--color-accent);
+    }
+
+    .nav-menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: var(--spacing-sm);
+    }
+
+    @media (max-width: 768px) {
+      .nav-links {
+        position: fixed;
+        top: 48px;
+        left: 0;
+        right: 0;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        flex-direction: column;
+        padding: var(--spacing-lg);
+        transform: translateY(-100%);
+        opacity: 0;
+        transition: all 0.4s var(--transition-smooth);
+        pointer-events: none;
+      }
+
+      .nav-links.active {
+        transform: translateY(0);
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .nav-menu-toggle {
+        display: block;
+      }
+    }
+
+    .page-hero {
+      padding: 140px var(--spacing-lg) var(--spacing-3xl);
+      text-align: center;
+      background: linear-gradient(180deg, #FBFBFD 0%, #FFFFFF 100%);
+    }
+
+    .page-overline {
+      font-size: 17px;
+      font-weight: 500;
+      color: var(--color-accent);
+      margin-bottom: var(--spacing-md);
+    }
+
+    .page-title {
+      font-size: clamp(40px, 6vw, 64px);
+      font-weight: 600;
+      letter-spacing: -0.03em;
+      line-height: 1.05;
+      margin-bottom: var(--spacing-lg);
+    }
+
+    .page-description {
+      font-size: clamp(17px, 2vw, 21px);
+      color: var(--color-text-secondary);
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.5;
+    }
+
+    .robots-section {
+      padding: var(--spacing-3xl) 0;
+    }
+
+    .robots-grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: var(--spacing-lg);
+    }
+
+    .robot-card {
+      background: #FFFFFF;
+      border-radius: var(--border-radius-xl);
+      overflow: hidden;
+      box-shadow: var(--shadow-card);
+      transition: all 0.4s var(--transition-smooth);
+      cursor: pointer;
+    }
+
+    .robot-card:hover {
+      box-shadow: var(--shadow-elevated);
+      transform: scale(1.02);
+    }
+
+    .robot-card.large {
+      grid-column: span 8;
+    }
+
+    .robot-card.medium {
+      grid-column: span 6;
+    }
+
+    .robot-card.small {
+      grid-column: span 4;
+    }
+
+    .robot-image {
+      width: 100%;
+      height: 280px;
+      background: linear-gradient(135deg, #F5F5F7 0%, #E8E8ED 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-text-secondary);
+      font-size: 14px;
+      text-align: center;
+      padding: var(--spacing-lg);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .robot-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      background: #f5f5f7;
+    }
+
+    .placeholder-text {
+      color: var(--color-text-secondary);
+      font-size: 14px;
+      text-align: center;
+      opacity: 0.6;
+    }
+
+    .robot-card.large .robot-image {
+      height: 360px;
+    }
+
+    .robot-content {
+      padding: var(--spacing-xl);
+    }
+
+    .robot-tag {
+      display: inline-block;
+      padding: 4px 12px;
+      background: rgba(0, 113, 227, 0.1);
+      color: var(--color-accent);
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+      margin-bottom: var(--spacing-md);
+    }
+
+    .robot-title {
+      font-size: 24px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      margin-bottom: var(--spacing-sm);
+    }
+
+    .robot-description {
+      font-size: 17px;
+      color: var(--color-text-secondary);
+      line-height: 1.5;
+      margin-bottom: var(--spacing-md);
+    }
+
+    .robot-specs {
+      display: flex;
+      gap: var(--spacing-lg);
+      flex-wrap: wrap;
+    }
+
+    .spec-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 14px;
+      color: var(--color-text);
+      background: var(--color-bg-secondary);
+      padding: 6px 12px;
+      border-radius: 8px;
+    }
+
+    .spec-badge svg {
+      width: 16px;
+      height: 16px;
+      color: var(--color-accent);
+    }
+
+    @media (max-width: 1024px) {
+      .robot-card.large,
+      .robot-card.medium,
+      .robot-card.small {
+        grid-column: span 6;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .robot-card.large,
+      .robot-card.medium,
+      .robot-card.small {
+        grid-column: span 12;
+      }
+
+      .robot-image,
+      .robot-card.large .robot-image {
+        height: 200px;
+      }
+    }
+
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: var(--z-index-modal);
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s var(--transition-smooth);
+      padding: var(--spacing-lg);
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal-content {
+      background: #FFFFFF;
+      border-radius: var(--border-radius-xl);
+      max-width: 900px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      transform: scale(0.95);
+      transition: transform 0.3s var(--transition-smooth);
+    }
+
+    .modal-overlay.active .modal-content {
+      transform: scale(1);
+    }
+
+    .modal-close {
+      position: absolute;
+      top: var(--spacing-lg);
+      right: var(--spacing-lg);
+      background: rgba(255, 255, 255, 0.9);
+      border: none;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 10;
+      transition: background 0.3s var(--transition-smooth);
+    }
+
+    .modal-close:hover {
+      background: #FFFFFF;
+    }
+
+    .modal-close svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .modal-hero {
+      height: 400px;
+      background: linear-gradient(135deg, #F5F5F7 0%, #E8E8ED 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-text-secondary);
+      font-size: 14px;
+      text-align: center;
+      padding: var(--spacing-lg);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .modal-hero img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      background: #f5f5f7;
+    }
+
+    .modal-body {
+      padding: var(--spacing-2xl);
+    }
+
+    .modal-title {
+      font-size: 32px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      margin-bottom: var(--spacing-md);
+    }
+
+    .modal-description {
+      font-size: 17px;
+      color: var(--color-text-secondary);
+      line-height: 1.6;
+      margin-bottom: var(--spacing-xl);
+    }
+
+    .modal-specs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: var(--spacing-md);
+      margin-bottom: var(--spacing-xl);
+    }
+
+    .spec-card {
+      background: var(--color-bg-secondary);
+      border-radius: var(--border-radius-md);
+      padding: var(--spacing-lg);
+      text-align: center;
+    }
+
+    .spec-card-label {
+      font-size: 12px;
+      color: var(--color-text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: var(--spacing-xs);
+    }
+
+    .spec-card-value {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--color-text);
+    }
+
+    .modal-sdk {
+      background: var(--color-bg-secondary);
+      border-radius: var(--border-radius-lg);
+      padding: var(--spacing-xl);
+    }
+
+    .modal-sdk-title {
+      font-size: 17px;
+      font-weight: 600;
+      margin-bottom: var(--spacing-md);
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+    }
+
+    .sdk-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--spacing-sm);
+    }
+
+    .sdk-tag {
+      padding: 8px 16px;
+      background: #FFFFFF;
+      border-radius: 20px;
+      font-size: 14px;
+      color: var(--color-text);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .video-section {
+      padding: var(--spacing-3xl) 0;
+      background: var(--color-bg-secondary);
+    }
+
+    .video-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: var(--spacing-lg);
+    }
+
+    .video-card {
+      background: #FFFFFF;
+      border-radius: var(--border-radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-card);
+      transition: all 0.4s var(--transition-smooth);
+    }
+
+    .video-card:hover {
+      box-shadow: var(--shadow-elevated);
+      transform: translateY(-4px);
+    }
+
+    .video-wrapper {
+      width: 100%;
+      height: 200px;
+      background: #000;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .video-wrapper video {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .video-wrapper.playing .play-button {
+      display: none !important;
+    }
+
+    .play-button {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 56px;
+      height: 56px;
+      background: rgba(0, 0, 0, 0.8);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s var(--transition-smooth);
+      z-index: 2;
+      border: none;
+    }
+
+    .play-button:hover {
+      transform: translate(-50%, -50%) scale(1.1);
+      background: rgba(0, 0, 0, 0.9);
+    }
+
+    .play-button svg {
+      width: 20px;
+      height: 20px;
+      fill: white;
+      margin-left: 3px;
+    }
+
+    .video-info {
+      padding: var(--spacing-lg);
+    }
+
+    .video-title {
+      font-size: 17px;
+      font-weight: 600;
+      margin-bottom: var(--spacing-xs);
+    }
+
+    .video-description {
+      font-size: 14px;
+      color: var(--color-text-secondary);
+    }
+
+    .footer {
+      padding: var(--spacing-2xl) 0;
+      border-top: 1px solid var(--color-border);
+      background: var(--color-bg-secondary);
+    }
+
+    .footer-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: var(--spacing-lg);
+    }
+
+    .footer-info {
+      font-size: 14px;
+      color: var(--color-text-secondary);
+    }
+
+    .footer-links {
+      display: flex;
+      gap: var(--spacing-xl);
+    }
+
+    .footer-links a {
+      font-size: 14px;
+      color: var(--color-text-secondary);
+      text-decoration: none;
+      transition: color 0.3s var(--transition-smooth);
+    }
+
+    .footer-links a:hover {
+      color: var(--color-accent);
+    }
+
+    @media (max-width: 768px) {
+      .footer-content {
+        flex-direction: column;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="progress-bar" id="progressBar"></div>
+
+  <nav class="nav-container">
+    <div class="nav">
+      <a href="index.html" class="nav-logo">
+        <svg viewBox="0 0 32 32" fill="none">
+          <circle cx="16" cy="16" r="12" stroke="url(#navGradient)" stroke-width="2"/>
+          <circle cx="16" cy="16" r="6" fill="url(#navGradient)"/>
+          <defs>
+            <linearGradient id="navGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#0071E3"/>
+              <stop offset="100%" stop-color="#5E5CE6"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <span>Meta-Kernel</span>
+      </a>
+      <button class="nav-menu-toggle" id="menuToggle">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24">
+          <path d="M3 12h18M3 6h18M3 18h18"/>
+        </svg>
+      </button>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="index.html">首页</a></li>
+        <li><a href="robots.html" class="active">核心成果</a></li>
+        <li><a href="custom.html">二次开发</a></li>
+        <li><a href="archive.html">影像实验室</a></li>
+        <li><a href="about.html">关于我们</a></li>
+        <li><a href="contact.html">联系我们</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <header class="page-hero">
+    <p class="page-overline">Robotics Platform</p>
+    <h1 class="page-title">核心成果矩阵</h1>
+    <p class="page-description">从四足机器人到仿生系统，构建完整的智能机器人研发体系</p>
+  </header>
+
+  <main class="container-wide">
+    <section class="robots-section">
+      <div class="robots-grid">
+        <div class="robot-card large" data-robot="b2">
+          <div class="robot-image">
+            <img src="assets/images/projects/unitree-b2-hero.jpg" alt="Unitree B2">
+          </div>
+          <div class="robot-content">
+            <span class="robot-tag">四足机器人</span>
+            <h3 class="robot-title">Unitree B2</h3>
+            <p class="robot-description">工业级四足机器人，具备卓越的负载能力和地形适应性，适用于复杂环境下的巡检与运输任务。</p>
+            <div class="robot-specs">
+              <span class="spec-badge">
+                <svg viewBox="0 0 16 16" fill="currentColor"><circle cx="8" cy="8" r="6"/></svg>
+                12 DOF
+              </span>
+              <span class="spec-badge">
+                <svg viewBox="0 0 16 16" fill="currentColor"><rect x="2" y="6" width="12" height="4" rx="2"/></svg>
+                20kg 负载
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="robot-card small" data-robot="go2">
+          <div class="robot-image">
+            <img src="assets/images/projects/unitree-go2.jpg" alt="Unitree Go2">
+          </div>
+          <div class="robot-content">
+            <span class="robot-tag">消费级</span>
+            <h3 class="robot-title">Unitree Go2</h3>
+            <p class="robot-description">轻量化教育研究平台，支持二次开发与算法验证。</p>
+          </div>
+        </div>
+
+        <div class="robot-card medium" data-robot="arm">
+          <div class="robot-image">
+            <img src="assets/images/projects/custom-arm.jpg" alt="6-DOF 机械臂">
+          </div>
+          <div class="robot-content">
+            <span class="robot-tag">自研平台</span>
+            <h3 class="robot-title">6-DOF 机械臂</h3>
+            <p class="robot-description">基于 ROS 2 的自研六自由度机械臂，支持视觉引导抓取与力控混合控制。</p>
+            <div class="robot-specs">
+              <span class="spec-badge">6 DOF</span>
+              <span class="spec-badge">3kg 负载</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="robot-card small" data-robot="terminal">
+          <div class="robot-image">
+            <img src="assets/images/projects/console-main.jpg" alt="具身智能终端">
+          </div>
+          <div class="robot-content">
+            <span class="robot-tag">人机交互</span>
+            <h3 class="robot-title">具身智能终端</h3>
+            <p class="robot-description">多模态人机交互系统，融合视觉、语音、触觉反馈。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <section class="video-section">
+    <div class="container-wide">
+      <div style="text-align: center; margin-bottom: var(--spacing-3xl);">
+        <p class="section-label">演示视频</p>
+        <h2 class="section-title">实时系统运行记录</h2>
+      </div>
+      
+      <div class="video-grid">
+        <div class="video-card">
+          <div class="video-wrapper">
+            <video src="assets/videos/b2-patrol.mp4" muted loop playsinline></video>
+            <button class="play-button">
+              <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            </button>
+          </div>
+          <div class="video-info">
+            <h4 class="video-title">B2 室外巡检任务</h4>
+            <p class="video-description">自主导航与障碍物避障演示</p>
+          </div>
+        </div>
+
+        <div class="video-card">
+          <div class="video-wrapper">
+            <video src="assets/videos/arm-grasping.mp4" muted loop playsinline></video>
+            <button class="play-button">
+              <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            </button>
+          </div>
+          <div class="video-info">
+            <h4 class="video-title">视觉引导抓取</h4>
+            <p class="video-description">深度学习目标识别与抓取规划</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="modal-overlay" id="robotModal">
+    <div class="modal-content">
+      <button class="modal-close" id="modalClose">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 6L6 18M6 6l12 12"/>
+        </svg>
+      </button>
+      <div class="modal-hero" id="modalHero">
+        占位符：机器人演示视频或高清图<br>
+        路径：/assets/videos/[robot-name]-demo.mp4<br>
+        (建议：1920x1080px 或 4K分辨率)
+      </div>
+      <div class="modal-body">
+        <h2 class="modal-title" id="modalTitle">Robot Name</h2>
+        <p class="modal-description" id="modalDescription">Robot description goes here.</p>
+        
+        <div class="modal-specs-grid" id="modalSpecs"></div>
+
+        <div class="modal-sdk">
+          <h3 class="modal-sdk-title">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/>
+            </svg>
+            SDK 与开发支持
+          </h3>
+          <div class="sdk-list" id="modalSDK"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-info">© 2024 元核智算工作室 · 潍坊科技学院</div>
+        <div class="footer-links">
+          <a href="about.html">关于我们</a>
+          <a href="archive.html">影像实验室</a>
+          <a href="custom.html">定制服务</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    var robotData = {
+      b2: {
+        title: 'Unitree B2 工业级四足机器人',
+        image: 'assets/images/projects/unitree-b2-hero.jpg',
+        description: 'B2 是宇树科技推出的工业级四足机器人，具备强大的负载能力和卓越的地形适应性。它配备了高性能的感知系统和先进的运动控制算法，能够在复杂环境中稳定运行。我们基于 B2 平台进行了深度二次开发，实现了自主导航、动态避障、智能巡检等功能。',
+        specs: [
+          { label: '自由度', value: '12 DOF' },
+          { label: '最大负载', value: '20 kg' },
+          { label: '最大速度', value: '1.5 m/s' },
+          { label: '续航时间', value: '4 hours' },
+          { label: '工作温度', value: '-20~40°C' },
+          { label: '防护等级', value: 'IP54' }
+        ],
+        sdk: ['ROS/ROS2', 'Python API', 'C++ SDK', 'MATLAB', 'Gazebo', 'Webots']
+      },
+      go2: {
+        title: 'Unitree Go2 教育研究平台',
+        image: 'assets/images/projects/unitree-go2.jpg',
+        description: 'Go2 是一款轻量化的四足机器人平台，专为教育和研究场景设计。它支持多种编程语言和开发环境，是学习机器人学和验证算法的理想选择。',
+        specs: [
+          { label: '自由度', value: '12 DOF' },
+          { label: '最大负载', value: '5 kg' },
+          { label: '最大速度', value: '2.5 m/s' },
+          { label: '续航时间', value: '2 hours' },
+          { label: '重量', value: '2.5 kg' },
+          { label: '通信', value: 'Wi-Fi 6' }
+        ],
+        sdk: ['ROS/ROS2', 'Python API', 'C++ SDK', 'Unity', 'Unreal Engine']
+      },
+      arm: {
+        title: '自研 6-DOF 机械臂',
+        image: 'assets/images/projects/custom-arm.jpg',
+        description: '基于开源设计深度定制的六自由度机械臂系统，采用高性能伺服电机和精密传动结构。支持力控混合控制和视觉引导抓取，是具身智能研究的重要实验平台。',
+        specs: [
+          { label: '自由度', value: '6 DOF' },
+          { label: '最大负载', value: '3 kg' },
+          { label: '工作半径', value: '600 mm' },
+          { label: '重复精度', value: '±0.1 mm' },
+          { label: '末端工具', value: '自适应夹爪' },
+          { label: '通信接口', value: 'CAN' }
+        ],
+        sdk: ['MoveIt!', 'ROS2 Control', 'OpenCV', 'PyBullet', 'Custom C++']
+      },
+      terminal: {
+        title: '具身智能交互终端',
+        image: 'assets/images/projects/console-main.jpg',
+        description: '融合视觉、语音、触觉的多模态人机交互系统。支持自然语言理解和情感识别，可作为机器人的人机接口，实现更自然的交互体验。',
+        specs: [
+          { label: '显示屏', value: '10.1" IPS' },
+          { label: '摄像头', value: '1080p 广角' },
+          { label: '麦克风', value: '4 麦阵列' },
+          { label: '触摸', value: '多点触控' },
+          { label: '扬声器', value: '双声道 5W' },
+          { label: '处理器', value: 'Jetson' }
+        ],
+        sdk: ['Web Speech', 'MediaPipe', 'OpenCV', 'TensorFlow', 'PyTorch']
+      }
+    };
+
+    var modal = document.getElementById('robotModal');
+    var modalClose = document.getElementById('modalClose');
+    var modalHero = document.getElementById('modalHero');
+    var robotCards = document.querySelectorAll('.robot-card');
+
+    for (var i = 0; i < robotCards.length; i++) {
+      robotCards[i].addEventListener('click', function() {
+        var robotId = this.dataset.robot;
+        var data = robotData[robotId];
+
+        if (data) {
+          document.getElementById('modalTitle').textContent = data.title;
+          document.getElementById('modalDescription').textContent = data.description;
+
+          if (data.image) {
+            modalHero.innerHTML = '<img src="' + data.image + '" alt="' + data.title + '">';
+          } else {
+            modalHero.innerHTML = '<span style="color: var(--color-text-secondary);">暂无图片</span>';
+          }
+
+          var specsContainer = document.getElementById('modalSpecs');
+          var specsHtml = '';
+          for (var j = 0; j < data.specs.length; j++) {
+            var spec = data.specs[j];
+            specsHtml += '<div class="spec-card"><div class="spec-card-label">' + spec.label + '</div><div class="spec-card-value">' + spec.value + '</div></div>';
+          }
+          specsContainer.innerHTML = specsHtml;
+
+          var sdkContainer = document.getElementById('modalSDK');
+          var sdkHtml = '';
+          for (var k = 0; k < data.sdk.length; k++) {
+            sdkHtml += '<span class="sdk-tag">' + data.sdk[k] + '</span>';
+          }
+          sdkContainer.innerHTML = sdkHtml;
+
+          modal.classList.add('active');
+          document.body.style.overflow = 'hidden';
+        }
+      });
+    }
+
+    modalClose.addEventListener('click', function() {
+      modal.classList.remove('active');
+      document.body.style.overflow = '';
+    });
+
+    modal.addEventListener('click', function(e) {
+      if (e.target === modal) {
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+    });
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+    });
+
+    var videoWrappers = document.querySelectorAll('.video-wrapper');
+    for (var i = 0; i < videoWrappers.length; i++) {
+      var video = videoWrappers[i].querySelector('video');
+      var playBtn = videoWrappers[i].querySelector('.play-button');
+
+      playBtn.addEventListener('click', function() {
+        var currentVideo = this.parentElement.querySelector('video');
+        var isPlaying = !currentVideo.paused;
+
+        for (var j = 0; j < videoWrappers.length; j++) {
+          var v = videoWrappers[j].querySelector('video');
+          if (v !== currentVideo) {
+            v.pause();
+            v.parentElement.classList.remove('playing');
+            videoWrappers[j].querySelector('.play-button').style.display = 'flex';
+          }
+        }
+
+        if (isPlaying) {
+          currentVideo.pause();
+          currentVideo.parentElement.classList.remove('playing');
+          this.style.display = 'flex';
+        } else {
+          currentVideo.play();
+          currentVideo.parentElement.classList.add('playing');
+          this.style.display = 'none';
+        }
+      });
+
+      video.addEventListener('click', function() {
+        var btn = this.parentElement.querySelector('.play-button');
+        btn.click();
+      });
+
+      video.addEventListener('ended', function() {
+        this.parentElement.classList.remove('playing');
+        this.parentElement.querySelector('.play-button').style.display = 'flex';
+      });
+    }
+
+    var menuToggle = document.getElementById('menuToggle');
+    var navLinks = document.getElementById('navLinks');
+
+    menuToggle.addEventListener('click', function() {
+      navLinks.classList.toggle('active');
+    });
+
+    window.addEventListener('scroll', function() {
+      var scrollTop = window.scrollY;
+      var docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      var scrollPercent = (scrollTop / docHeight) * 100;
+      document.getElementById('progressBar').style.width = scrollPercent + '%';
+    });
+
+    var observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    };
+
+    var observer = new IntersectionObserver(function(entries) {
+      for (var i = 0; i < entries.length; i++) {
+        if (entries[i].isIntersecting) {
+          entries[i].target.style.opacity = '1';
+          entries[i].target.style.transform = 'translateY(0)';
+        }
+      }
+    }, observerOptions);
+
+    var cards = document.querySelectorAll('.robot-card, .video-card');
+    for (var i = 0; i < cards.length; i++) {
+      cards[i].style.opacity = '0';
+      cards[i].style.transform = 'translateY(30px)';
+      cards[i].style.transition = 'opacity 0.6s cubic-bezier(0.25, 0.1, 0.25, 1), transform 0.6s cubic-bezier(0.25, 0.1, 0.25, 1)';
+      observer.observe(cards[i]);
+    }
+  </script>
+</body>
+</html>

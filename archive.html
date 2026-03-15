@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="影像实验室 - 元核智算工作室">
+  <title>影像实验室 | Meta-Kernel Lab</title>
+  <link rel="stylesheet" href="css/global.css">
+  <style>
+    .nav-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: var(--z-index-nav);
+      background: rgba(255, 255, 255, 0.72);
+      backdrop-filter: saturate(180%) blur(20px);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    }
+
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1024px;
+      margin: 0 auto;
+      padding: 0 var(--spacing-lg);
+      height: 48px;
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-sm);
+      font-weight: 600;
+      font-size: 1.125rem;
+      text-decoration: none;
+      color: var(--color-text);
+    }
+
+    .nav-logo svg {
+      width: 28px;
+      height: 28px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: var(--spacing-xl);
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--color-text);
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 400;
+      transition: color 0.3s var(--transition-smooth);
+      opacity: 0.8;
+    }
+
+    .nav-links a:hover {
+      opacity: 1;
+      color: var(--color-accent);
+    }
+
+    .nav-links a.active {
+      opacity: 1;
+      color: var(--color-accent);
+    }
+
+    .nav-menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: var(--spacing-sm);
+    }
+
+    @media (max-width: 768px) {
+      .nav-links {
+        position: fixed;
+        top: 48px;
+        left: 0;
+        right: 0;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        flex-direction: column;
+        padding: var(--spacing-lg);
+        transform: translateY(-100%);
+        opacity: 0;
+        transition: all 0.4s var(--transition-smooth);
+        pointer-events: none;
+        align-items: center;
+      }
+
+      .nav-links.active {
+        transform: translateY(0);
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .nav-menu-toggle {
+        display: block;
+      }
+    }
+
+    .hero {
+      padding: 160px var(--spacing-lg) 80px;
+      text-align: center;
+      background: linear-gradient(180deg, #FAFAFA 0%, #FFFFFF 100%);
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      background: rgba(0, 113, 227, 0.06);
+      border-radius: 100px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--color-accent);
+      margin-bottom: var(--spacing-lg);
+    }
+
+    .hero-title {
+      font-size: clamp(36px, 5vw, 52px);
+      font-weight: 600;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      margin-bottom: var(--spacing-md);
+    }
+
+    .hero-description {
+      font-size: clamp(16px, 2vw, 19px);
+      color: var(--color-text-secondary);
+      max-width: 520px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    .filter-section {
+      padding: 40px 0;
+      background: #FAFAFA;
+    }
+
+    .filter-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 var(--spacing-xl);
+    }
+
+    .filter-tabs {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .filter-tab {
+      padding: 10px 20px;
+      background: #FFFFFF;
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      border-radius: 100px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--color-text);
+      cursor: pointer;
+      transition: all 0.3s var(--transition-smooth);
+    }
+
+    .filter-tab:hover {
+      border-color: var(--color-accent);
+      color: var(--color-accent);
+    }
+
+    .filter-tab.active {
+      background: var(--color-accent);
+      border-color: var(--color-accent);
+      color: white;
+    }
+
+    .gallery-section {
+      padding: 60px 0 80px;
+    }
+
+    .gallery-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 var(--spacing-xl);
+    }
+
+    .masonry-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .gallery-item {
+      position: relative;
+      border-radius: 16px;
+      overflow: hidden;
+      background: linear-gradient(145deg, #F8F8FA 0%, #F0F0F2 100%);
+      border: 1px solid rgba(0, 0, 0, 0.04);
+      transition: all 0.4s var(--transition-smooth);
+      cursor: pointer;
+    }
+
+    .gallery-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      background: #f5f5f7;
+    }
+
+    .gallery-item:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.1);
+    }
+
+    .gallery-item.tall {
+      grid-row: span 2;
+    }
+
+    .gallery-item.wide {
+      grid-column: span 2;
+    }
+
+    .gallery-placeholder {
+      aspect-ratio: 4/3;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 24px;
+    }
+
+    .gallery-item.tall .gallery-placeholder {
+      aspect-ratio: 4/6;
+    }
+
+    .gallery-item.wide .gallery-placeholder {
+      aspect-ratio: 8/3;
+    }
+
+    .gallery-placeholder svg {
+      width: 40px;
+      height: 40px;
+      stroke: var(--color-text-secondary);
+      fill: none;
+      opacity: 0.3;
+    }
+
+    .gallery-placeholder p {
+      font-size: 13px;
+      color: var(--color-text-secondary);
+      text-align: center;
+      line-height: 1.6;
+      opacity: 0.7;
+    }
+
+    .gallery-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 20px;
+      background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+      color: white;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.3s var(--transition-smooth);
+    }
+
+    .gallery-item:hover .gallery-overlay {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .gallery-title {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .gallery-date {
+      font-size: 12px;
+      opacity: 0.8;
+    }
+
+    @media (max-width: 1024px) {
+      .masonry-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .gallery-item.wide {
+        grid-column: span 1;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .masonry-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .gallery-item.tall,
+      .gallery-item.wide {
+        grid-column: span 1;
+        grid-row: span 1;
+      }
+
+      .gallery-item.tall .gallery-placeholder,
+      .gallery-item.wide .gallery-placeholder {
+        aspect-ratio: 4/3;
+      }
+    }
+
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: var(--z-index-modal);
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s var(--transition-smooth);
+      padding: var(--spacing-xl);
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal-content {
+      max-width: 90vw;
+      max-height: 90vh;
+      position: relative;
+    }
+
+    .modal-image {
+      max-width: 100%;
+      max-height: 80vh;
+      border-radius: 12px;
+      background: linear-gradient(145deg, #F8F8FA 0%, #F0F0F2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 400px;
+      min-height: 300px;
+    }
+
+    .modal-image p {
+      color: var(--color-text-secondary);
+      font-size: 14px;
+      text-align: center;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: -48px;
+      right: 0;
+      background: none;
+      border: none;
+      color: white;
+      cursor: pointer;
+      padding: var(--spacing-sm);
+      opacity: 0.8;
+      transition: opacity 0.3s;
+    }
+
+    .modal-close:hover {
+      opacity: 1;
+    }
+
+    .modal-close svg {
+      width: 32px;
+      height: 32px;
+    }
+
+    .modal-info {
+      text-align: center;
+      margin-top: 16px;
+      color: white;
+    }
+
+    .modal-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .modal-desc {
+      font-size: 14px;
+      opacity: 0.7;
+    }
+
+    .footer {
+      padding: 48px 0;
+      border-top: 1px solid rgba(0, 0, 0, 0.06);
+      background: #FAFAFA;
+    }
+
+    .footer-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: var(--spacing-lg);
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 var(--spacing-xl);
+    }
+
+    .footer-info {
+      font-size: 13px;
+      color: var(--color-text-secondary);
+    }
+
+    .footer-links {
+      display: flex;
+      gap: var(--spacing-xl);
+    }
+
+    .footer-links a {
+      font-size: 13px;
+      color: var(--color-text-secondary);
+      text-decoration: none;
+      transition: color 0.3s var(--transition-smooth);
+    }
+
+    .footer-links a:hover {
+      color: var(--color-accent);
+    }
+
+    @media (max-width: 768px) {
+      .footer-content {
+        flex-direction: column;
+        text-align: center;
+      }
+    }
+
+    .fade-in {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.6s var(--transition-smooth), transform 0.6s var(--transition-smooth);
+    }
+
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+  <div class="progress-bar" id="progressBar"></div>
+
+  <nav class="nav-container">
+    <div class="nav">
+      <a href="index.html" class="nav-logo">
+        <svg viewBox="0 0 32 32" fill="none">
+          <circle cx="16" cy="16" r="12" stroke="url(#navGradient)" stroke-width="2"/>
+          <circle cx="16" cy="16" r="6" fill="url(#navGradient)"/>
+          <defs>
+            <linearGradient id="navGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#0071E3"/>
+              <stop offset="100%" stop-color="#5E5CE6"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <span>Meta-Kernel</span>
+      </a>
+      <button class="nav-menu-toggle" id="menuToggle">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24">
+          <path d="M3 12h18M3 6h18M3 18h18"/>
+        </svg>
+      </button>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="index.html">首页</a></li>
+        <li><a href="robots.html">核心成果</a></li>
+        <li><a href="custom.html">二次开发</a></li>
+        <li><a href="archive.html" class="active">影像实验室</a></li>
+        <li><a href="about.html">关于我们</a></li>
+        <li><a href="contact.html">联系我们</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="container">
+      <div class="hero-badge">Visual Archive</div>
+      <h1 class="hero-title">影像实验室</h1>
+      <p class="hero-description">记录项目历程、团队风采与荣誉时刻</p>
+    </div>
+  </section>
+
+  <section class="filter-section">
+    <div class="filter-container">
+      <div class="filter-tabs">
+        <button class="filter-tab active" data-filter="all">全部</button>
+        <button class="filter-tab" data-filter="project">项目记录</button>
+        <button class="filter-tab" data-filter="team">团队风采</button>
+        <button class="filter-tab" data-filter="award">获奖荣誉</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="gallery-section">
+    <div class="gallery-container">
+      <div class="masonry-grid" id="galleryGrid">
+        <div class="gallery-item wide fade-in" data-category="project" data-image="assets/images/gallery/b2-outdoor.jpg">
+          <img src="assets/images/gallery/b2-outdoor.jpg" alt="B2机器狗室外测试">
+          <div class="gallery-overlay">
+            <div class="gallery-title">B2机器狗室外测试</div>
+            <div class="gallery-date">2024年3月</div>
+          </div>
+        </div>
+
+        <div class="gallery-item fade-in" data-category="team" data-image="assets/images/gallery/team-photo.jpg">
+          <img src="assets/images/gallery/team-photo.jpg" alt="团队合影">
+          <div class="gallery-overlay">
+            <div class="gallery-title">团队合影</div>
+            <div class="gallery-date">2024年</div>
+          </div>
+        </div>
+
+        <div class="gallery-item fade-in" data-category="project" data-image="assets/images/gallery/arm-debug.jpg">
+          <img src="assets/images/gallery/arm-debug.jpg" alt="机械臂调试">
+          <div class="gallery-overlay">
+            <div class="gallery-title">机械臂调试</div>
+            <div class="gallery-date">2024年2月</div>
+          </div>
+        </div>
+
+        <div class="gallery-item fade-in" data-category="award" data-image="assets/images/gallery/award-1.jpg">
+          <img src="assets/images/gallery/award-1.jpg" alt="获奖证书">
+          <div class="gallery-overlay">
+            <div class="gallery-title">省级比赛获奖</div>
+            <div class="gallery-date">2024年1月</div>
+          </div>
+        </div>
+
+        <div class="gallery-item fade-in" data-category="project" data-image="assets/images/gallery/butterfly-test.jpg">
+          <img src="assets/images/gallery/butterfly-test.jpg" alt="仿生蝴蝶测试">
+          <div class="gallery-overlay">
+            <div class="gallery-title">仿生蝴蝶测试</div>
+            <div class="gallery-date">2024年3月</div>
+          </div>
+        </div>
+
+        <div class="gallery-item fade-in" data-category="team" data-image="assets/images/gallery/tech-share.jpg">
+          <img src="assets/images/gallery/tech-share.jpg" alt="技术分享会">
+          <div class="gallery-overlay">
+            <div class="gallery-title">技术分享会</div>
+            <div class="gallery-date">2024年2月</div>
+          </div>
+        </div>
+
+        <div class="gallery-item fade-in" data-category="project" data-image="assets/images/gallery/nav-test.jpg">
+          <img src="assets/images/gallery/nav-test.jpg" alt="导航系统测试">
+          <div class="gallery-overlay">
+            <div class="gallery-title">导航系统测试</div>
+            <div class="gallery-date">2024年1月</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="modal-overlay" id="galleryModal">
+    <div class="modal-content">
+      <button class="modal-close" id="modalClose">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 6L6 18M6 6l12 12"/>
+        </svg>
+      </button>
+      <div class="modal-image" id="modalImage">
+        <p>图片预览区域<br>点击图片占位符查看</p>
+      </div>
+      <div class="modal-info">
+        <div class="modal-title" id="modalTitle">图片标题</div>
+        <div class="modal-desc" id="modalDesc">图片描述</div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-info">© 2024 元核智算工作室 · 潍坊科技学院</div>
+      <div class="footer-links">
+        <a href="about.html">关于我们</a>
+        <a href="custom.html">定制服务</a>
+        <a href="contact.html">联系我们</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    (function() {
+      var menuToggle = document.getElementById('menuToggle');
+      var navLinks = document.getElementById('navLinks');
+
+      menuToggle.addEventListener('click', function() {
+        navLinks.classList.toggle('active');
+      });
+
+      window.addEventListener('scroll', function() {
+        var scrollTop = window.scrollY;
+        var docHeight = document.documentElement.scrollHeight - window.innerHeight;
+        var scrollPercent = (scrollTop / docHeight) * 100;
+        document.getElementById('progressBar').style.width = scrollPercent + '%';
+      });
+
+      var filterTabs = document.querySelectorAll('.filter-tab');
+      var galleryItems = document.querySelectorAll('.gallery-item');
+
+      for (var i = 0; i < filterTabs.length; i++) {
+        filterTabs[i].addEventListener('click', function() {
+          for (var j = 0; j < filterTabs.length; j++) {
+            filterTabs[j].classList.remove('active');
+          }
+          this.classList.add('active');
+
+          var filter = this.dataset.filter;
+          for (var k = 0; k < galleryItems.length; k++) {
+            if (filter === 'all' || galleryItems[k].dataset.category === filter) {
+              galleryItems[k].style.display = 'block';
+            } else {
+              galleryItems[k].style.display = 'none';
+            }
+          }
+        });
+      }
+
+      var modal = document.getElementById('galleryModal');
+      var modalClose = document.getElementById('modalClose');
+      var modalTitle = document.getElementById('modalTitle');
+      var modalDesc = document.getElementById('modalDesc');
+      var modalImage = document.getElementById('modalImage');
+
+      for (var i = 0; i < galleryItems.length; i++) {
+        galleryItems[i].addEventListener('click', function() {
+          var titleEl = this.querySelector('.gallery-title');
+          var dateEl = this.querySelector('.gallery-date');
+          var imageSrc = this.dataset.image;
+
+          if (titleEl) modalTitle.textContent = titleEl.textContent;
+          if (dateEl) modalDesc.textContent = dateEl.textContent;
+
+          if (imageSrc) {
+            modalImage.innerHTML = '<img src="' + imageSrc + '" alt="' + (titleEl ? titleEl.textContent : '') + '" style="max-width:100%;max-height:80vh;border-radius:12px;">';
+          } else {
+            modalImage.innerHTML = '<p style="color:#86868b;">暂无图片</p>';
+          }
+
+          modal.classList.add('active');
+          document.body.style.overflow = 'hidden';
+        });
+      }
+
+      modalClose.addEventListener('click', function() {
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+      });
+
+      modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+          modal.classList.remove('active');
+          document.body.style.overflow = '';
+        }
+      });
+
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+          modal.classList.remove('active');
+          document.body.style.overflow = '';
+        }
+      });
+
+      var observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+      };
+
+      var observer = new IntersectionObserver(function(entries) {
+        for (var i = 0; i < entries.length; i++) {
+          if (entries[i].isIntersecting) {
+            entries[i].target.classList.add('visible');
+          }
+        }
+      }, observerOptions);
+
+      var fadeElements = document.querySelectorAll('.fade-in');
+      for (var i = 0; i < fadeElements.length; i++) {
+        observer.observe(fadeElements[i]);
+      }
+    })();
+  </script>
+</body>
+</html>
